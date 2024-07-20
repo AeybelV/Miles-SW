@@ -2,12 +2,37 @@
 
 This submodule contains the software the Miles Hexapod Robot.
 
-## Getting Started
+## Dependencies
 
-1. Install the required dependencies.
-2. Build and upload the firmware to the Milk V Duo SBC.
-3. Configure the OS according to the provided configuration files.
-4. Run the software to control the hexapod.
+- git
+- docker
+- make
+
+## Compiling
+
+Docker is utilized to handle package management and building
+both the OS and robot software.
+
+To build everything, just run
+
+```sh
+make # Builds everything
+```
+
+OS images and software can be built seperately.
+
+```sh
+make software # Builds software
+make os # Builds OS Images
+```
+
+The results can be found in the output folder.
+
+You can flash to an SD card with
+
+```sh
+sudo dd if=build/os/out/<image name>.img of=/dev/<sd device> bs=4M status=progress
+```
 
 ## License
 
