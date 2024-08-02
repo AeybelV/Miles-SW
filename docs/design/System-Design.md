@@ -4,6 +4,16 @@
 
 - [System Design](#system-design)
   - [Key Components](#key-components)
+  - [Platform Abstraction Layer (PAL)/BSP](#platform-abstraction-layer-palbsp)
+  - [Hardware Abstraction Layer (HAL)](#hardware-abstraction-layer-hal)
+  - [Inter-Core Communication (ICC) Layer](#inter-core-communication-icc-layer)
+  - [Core Modules](#core-modules)
+  <!--toc:end-->
+
+<!--toc:start-->
+
+- [System Design](#system-design)
+  - [Key Components](#key-components)
 
 The hexapod robot software architecture aims to be modular, scalable, and maintainable.
 The architecture is designed to be cross-platform, ensuring that the same design principles can
@@ -75,3 +85,18 @@ MPU6050 or the BNO055. Higher level logic does not need to be concerned with spe
 IMU interface provided by the HAL. This design allows for easy bring up or swapping of hardware.
 
 ![HAL and PAL](./HAL_PAL.png)
+
+## Inter-Core Communication (ICC) Layer
+
+The Inter-Core Communication (ICC) layer facilitates communication between the Linux core (Core A) and the MCU core (Core B).
+This layer abstracts the underlying communication mechanisms between the cores, as this can vary based on the setup.
+
+The ICC layer defines interfaces for sending and receiving messages between cores. These interfaces standardize the way
+communication is handled, ensuring consistency across different platforms and protocols. If both cores are on seperate chips, then
+the ICC can utilize the PAL to faciliate communication between the two processes using communication protocols such as UART. On platforms where both cores lie on the same SoC,
+we can utilize frameworks such as the Linux Mailbox, or OpenAMP.
+
+## Core Modules
+
+The core modules are responsible for the main functionalities and control logic of the system. These modules handle tasks
+such as movement control, sensor data processing, and overall system management.
