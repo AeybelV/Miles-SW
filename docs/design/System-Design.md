@@ -8,12 +8,8 @@
   - [Hardware Abstraction Layer (HAL)](#hardware-abstraction-layer-hal)
   - [Inter-Core Communication (ICC) Layer](#inter-core-communication-icc-layer)
   - [Core Modules](#core-modules)
+  - [Application Layer](#application-layer)
   <!--toc:end-->
-
-<!--toc:start-->
-
-- [System Design](#system-design)
-  - [Key Components](#key-components)
 
 The hexapod robot software architecture aims to be modular, scalable, and maintainable.
 The architecture is designed to be cross-platform, ensuring that the same design principles can
@@ -99,4 +95,12 @@ we can utilize frameworks such as the Linux Mailbox, or OpenAMP.
 ## Core Modules
 
 The core modules are responsible for the main functionalities and control logic of the system. These modules handle tasks
-such as movement control, sensor data processing, and overall system management.
+such as movement control, sensor data processing, and are responsible for interactions with the hardware (through the underlying layers).
+
+Core modules include the movement controller, which controls the servos to move the robot. The sensor DAQ service, and others.
+
+## Application Layer
+
+The application layer defines the high-level behaviors and interactions of the robot. It coordinates the core modules to perform
+tasks and respond to user commands and perform autonomously. Behavioural algorithms are implemented here. User interfaces for
+interaction and control are exposed here.
