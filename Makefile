@@ -7,7 +7,7 @@ BUILD_DIR := $(PWD)/build
 OS_BUILD_DIR := $(BUILD_DIR)/os
 SW_BUILD_DIR := $(BUILD_DIR)/sw
 OS_DOCKER_IMAGE := milkvtech/milkv-duo:latest
-SOFTWARE_DOCKER_IMAGE := miles-robot-software:latest
+SOFTWARE_DOCKER_IMAGE := miles-robot-software
 BUILDROOT_CONTAINER_NAME := miles-milkv-duo-buildroot
 
 # Targets
@@ -31,6 +31,10 @@ os:
 #Build the robot software
 software:
 	@echo "Building Software..."
+	@echo "Building buildenv container"
+	@docker build -t $(SOFTWARE_DOCKER_IMAGE)
+	@echo "Running build enviornment"
+	@docker run it $(SOFTWARE_DOCKER_IMAGE)
 
 # Clean build artifacts
 clean:
