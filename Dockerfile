@@ -45,14 +45,18 @@ RUN make linux -j$(nproc)
 ENV PATH=/opt/riscv/bin:$PATH
 
 # Copy the project into the Docker image
-# COPY /path/to/your/project /opt/project
+COPY . /opt/miles
 
 # Set the working directory to your project
-# WORKDIR /opt/project
+WORKDIR /opt/miles
 
-# Compile your project using the RISC-V toolchain
-# RUN mkdir build && cd build && cmake .. && make -j$(nproc)
+# Setups CMake
+RUN cmake -S . -B build/sw
 
-# Set the entrypoint to a shell so you can run commands in the container
+# Copy the build script into the Docker image
+COPY build_project.sh /usr/local/bin/build_project.sh
+RUN chmod +x /usr/local/bin/build_project.sh
+
+# Set the entrypoint to a shell, allows for running commands if needed
 ENTRYPOINT ["/bin/bash"]
 

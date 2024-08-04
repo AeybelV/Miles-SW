@@ -7,7 +7,7 @@ BUILD_DIR := $(PWD)/build
 OS_BUILD_DIR := $(BUILD_DIR)/os
 SW_BUILD_DIR := $(BUILD_DIR)/sw
 OS_DOCKER_IMAGE := milkvtech/milkv-duo:latest
-SOFTWARE_DOCKER_IMAGE := miles-robot-software
+SOFTWARE_DOCKER_IMAGE := miles-sw-build
 BUILDROOT_CONTAINER_NAME := miles-milkv-duo-buildroot
 
 # Targets
@@ -28,13 +28,18 @@ os:
 	@rsync -av --ignore-existing $(PWD)/duo-buildroot-sdk/out $(OS_BUILD_DIR)
 	@docker stop $(BUILDROOT_CONTAINER_NAME)
 
-#Build the robot software
-software:
-	@echo "Building Software..."
+buildenv-container:
 	@echo "Building buildenv container"
-	@docker build -t $(SOFTWARE_DOCKER_IMAGE)
-	@echo "Running build enviornment"
-	@docker run it $(SOFTWARE_DOCKER_IMAGE)
+	@docker build -t $(SOFTWARE_DOCKER_IMAGE) -f ./Dockerfile .
+
+configure: buildenv-container
+	@echo "Opening Configuration"
+	@docker run -t $(SOFTWARE_DOCKER_IMAGE) /usr/local/bin/build_project.sh configure	
+#Build the robot software
+software: buildenv-container
+	mkdir -p $(SW_BUILD_DIR)
+	@echo "Building Software..."
+	@docker run -it $(SOFTWARE_DOCKER_IMAGE) /usr/local/bin/build_project.sh
 
 # Clean build artifacts
 clean:
