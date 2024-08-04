@@ -2,6 +2,8 @@
 
 # Variables
 BOARD := milkv-duo
+ARCH := riscv64
+TOOLCHAIN := c906fdv-riscv64-unknown-linux-musl
 IMAGE_TYPE := sd
 BUILD_DIR := $(PWD)/build
 OS_BUILD_DIR := $(BUILD_DIR)/os
@@ -32,19 +34,22 @@ buildenv-container:
 	@echo "Building buildenv container"
 	@docker build -t $(SOFTWARE_DOCKER_IMAGE) -f ./Dockerfile .
 
+# You need to manually go into the build folder and run ccmake due to issue with ncurses and docker
 configure: buildenv-container
 	@echo "Opening Configuration"
-	@docker run -t $(SOFTWARE_DOCKER_IMAGE) /usr/local/bin/build_project.sh configure	
+	@docker run -it $(SOFTWARE_DOCKER_IMAGE)
+	
 #Build the robot software
 software: buildenv-container
-	mkdir -p $(SW_BUILD_DIR)
+	@mkdir -p $(SW_BUILD_DIR)
 	@echo "Building Software..."
-	@docker run -it $(SOFTWARE_DOCKER_IMAGE) /usr/local/bin/build_project.sh
+	@docker run -it -v $(SW_BUILD_DIR):/opt/miles/build/sw/ $(SOFTWARE_DOCKER_IMAGE) /usr/local/bin/build_project.sh $(ARCH) $(TOOLCHAIN) build
 
 # Clean build artifacts
 clean:
 	@echo "Cleaning build artifacts..."	
 	@echo "Removing Docker Containers"
-	@docker rm -f $(BUILDROOT_CONTAINER_NAME); \
+	@docker rm -f $(BUILDROOT_CONTAINER_NAME)
+	@docker rm -f $(SOFTWARE_DOCKER_IMAGE)
 
 

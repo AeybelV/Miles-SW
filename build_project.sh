@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# This is meant to be run within the container
-
+ARCH=$1
+CMAKE_TOOLCHAIN=$2
 # Navigate to the project directory
 cd /opt/miles
 
 # Create build directory if it doesn't exist
 mkdir -p build/sw
-cd build/sw
 
+# Setups CMake
+# This is where toolchains are passed in
+cmake -DCMAKE_TOOLCHAIN_FILE=$(pwd)/toolchain/$ARCH/$CMAKE_TOOLCHAIN.toolchain.cmake -S . -B build/sw
 # If a command-line argument is passed to the script, handle it
-if [ "$1" == "configure" ]; then
+if [ "$3" == "build" ]; then
+  cd build/sw
   # Run cmake with the toolchain file and then ccmake for interactive configuration
-  ccmake .
-else
-  # Run cmake with the toolchain file and then make to compile the project
   make -j$(nproc)
 fi

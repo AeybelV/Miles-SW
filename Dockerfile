@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     bison \
     build-essential \
     cmake \
+    cmake-curses-gui \
     curl \
     flex \
     gawk \
@@ -34,24 +35,23 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev
 
 # Clone the RISC-V GNU Toolchain repository
-RUN git clone https://github.com/riscv/riscv-gnu-toolchain /opt/riscv-gnu-toolchain
+# RUN git clone https://github.com/riscv/riscv-gnu-toolchain /opt/riscv-gnu-toolchain
 
 # Build the RISC-V toolchain for RV64 for linux targets
-WORKDIR /opt/riscv-gnu-toolchain
-RUN ./configure --prefix=/opt/riscv
-RUN make linux -j$(nproc)
+# WORKDIR /opt/riscv-gnu-toolchain
+# RUN ./configure --prefix=/opt/riscv
+# RUN make musl -j$(nproc)
+
+RUN git clone https://github.com/milkv-duo/duo-sdk.git /opt/riscv/
 
 # Add the toolchain to the PATH
-ENV PATH=/opt/riscv/bin:$PATH
+ENV PATH=/opt/riscv/riscv64-linux-musl-x86_64/bin:$PATH
 
 # Copy the project into the Docker image
 COPY . /opt/miles
 
 # Set the working directory to your project
 WORKDIR /opt/miles
-
-# Setups CMake
-RUN cmake -S . -B build/sw
 
 # Copy the build script into the Docker image
 COPY build_project.sh /usr/local/bin/build_project.sh
