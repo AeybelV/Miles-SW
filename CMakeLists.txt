@@ -1,14 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
 project(Miles)
 
+# ========== SPI ==========
+option(USE_SPIDEV "Use spidev for spi communication" ON)
+
+# ========== TESTS ==========
+option(ENABLE_TESTING "Enable compilation of tests" ON)
+
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# ========== CMake ==========
 
 MESSAGE(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
 MESSAGE(STATUS "Using compiler: ${CMAKE_C_COMPILER}")
-# Add compile-time options
-option(USE_WIRINGX "Use wiringX library for hardware communication" ON)
 
 # Define sources and headers
 file(GLOB_RECURSE SOURCES "src/*.cpp")
@@ -20,13 +27,13 @@ include_directories(include)
 # Add executable
 add_executable(Miles ${SOURCES})
 
-# Link libraries based on options
-if(USE_WIRINGX)
-  target_compile_definitions(Miles PRIVATE USE_WIRINGX)
-  # target_link_libraries(Miles wiringX)
+if(USE_SPIDEV)
+  target_compile_definitions(Miles PRIVATE USE_SPIDEV)
 endif()
 
 # Enable testing
-enable_testing()
-add_subdirectory(tests)
+if(ENABLE_TESTING)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
 
