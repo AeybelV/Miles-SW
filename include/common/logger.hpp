@@ -7,6 +7,7 @@
 #include <iostream>
 #include <mutex>
 #include <sstream>
+#include <string>
 
 enum class LogLevel
 {
@@ -21,11 +22,17 @@ class Logger
   public:
     Logger(LogLevel level = LogLevel::INFO) : logLevel(level), logToConsole(true), logToFile(false)
     {
+        moduleName = "";
     }
 
     void setLogLevel(LogLevel level)
     {
         logLevel = level;
+    }
+
+    void setModuleName(std::string name)
+    {
+        moduleName = name + ": ";
     }
 
     void setLogToConsole(bool enable)
@@ -87,6 +94,7 @@ class Logger
 
   private:
     LogLevel logLevel;
+    std::string moduleName;
     bool logToConsole;
     bool logToFile;
     std::ofstream logFile;
@@ -95,7 +103,8 @@ class Logger
     std::string formatLogMessage(LogLevel level, const std::string &message)
     {
         std::ostringstream oss;
-        oss << "[" << getCurrentTime() << "] [" << logLevelToString(level) << "] " << message;
+        oss << "[" << getCurrentTime() << "] [" << logLevelToString(level) << "] " << moduleName
+            << message;
         return oss.str();
     }
 
