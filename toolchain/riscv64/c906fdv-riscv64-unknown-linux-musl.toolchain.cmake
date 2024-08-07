@@ -1,3 +1,5 @@
+add_compile_definitions(BOARD="milkv_duo")
+
 # Define the C compiler and C++ compiler for RISC-V
 SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_PROCESSOR riscv64)
