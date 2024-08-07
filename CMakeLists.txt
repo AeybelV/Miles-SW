@@ -23,6 +23,7 @@ file(GLOB_RECURSE HEADERS "include/*.h")
 
 # Add include directories
 include_directories(include)
+include_directories(/opt/riscv64-linux-headers/include)
 
 # Add executable
 add_executable(Miles ${SOURCES})

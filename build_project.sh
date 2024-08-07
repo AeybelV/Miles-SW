@@ -14,6 +14,7 @@ cmake -DCMAKE_TOOLCHAIN_FILE=$(pwd)/toolchain/$ARCH/$CMAKE_TOOLCHAIN.toolchain.c
 # If a command-line argument is passed to the script, handle it
 if [ "$3" == "build" ]; then
   cd build/sw
+  echo "Starting build of robot software"
   # Run cmake with the toolchain file and then ccmake for interactive configuration
   make -j$(nproc)
 fi

@@ -30,10 +30,12 @@ RUN apt-get update && apt-get install -y \
     patchutils \
     python3 \
     python3-pip \
+    rsync \
     texinfo \
     wget \
     zlib1g-dev
 
+# =========================== RISC-V Toolchain ===========================
 # Clone the RISC-V GNU Toolchain repository
 # RUN git clone https://github.com/riscv/riscv-gnu-toolchain /opt/riscv-gnu-toolchain
 
@@ -42,10 +44,21 @@ RUN apt-get update && apt-get install -y \
 # RUN ./configure --prefix=/opt/riscv
 # RUN make musl -j$(nproc)
 
+# =========================== Milk-V SDK ===========================
 RUN git clone https://github.com/milkv-duo/duo-sdk.git /opt/riscv/
 
 # Add the toolchain to the PATH
 ENV PATH=/opt/riscv/riscv64-linux-musl-x86_64/bin:$PATH
+
+# =========================== RISC-V Linux Headers ===========================
+RUN git clone https://github.com/torvalds/linux.git /opt/linux
+
+WORKDIR /opt/linux
+
+RUN make ARCH=riscv defconfig
+RUN make ARCH=riscv headers_install INSTALL_HDR_PATH=/opt/riscv64-linux-headers/
+
+# =========================== Project Sync ===========================
 
 # Copy the project into the Docker image
 COPY . /opt/miles
