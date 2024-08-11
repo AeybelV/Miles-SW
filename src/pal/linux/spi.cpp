@@ -28,7 +28,8 @@ SPIInterface::SPIInterface(const std::string &deviceName, uint8_t bus, uint8_t s
     logger.setLogLevel(LogLevel::DEBUG);
 #endif
 
-    logger.setLogToFile("spi_spidev" + std::to_string(bus) + "." + std::to_string(slave), true);
+    logger.setLogToFile("spi_spidev" + std::to_string(bus) + "." + std::to_string(slave) + ".log",
+                        true);
     logger.setModuleName("SPI-" + deviceName);
 }
 
