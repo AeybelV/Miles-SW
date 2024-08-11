@@ -46,7 +46,7 @@ across multiple System on Chips (SoCs) and platforms. This abstraction ensures t
 HAL code remain platform-agnostic, facilitating portability and maintainability.
 
 How this is implemented will vary from platform to platform, chip to chip. This layer could call vendor specific libraries
-or driver code. It could also call cross platform libraries that accomplish this task. We allow easy swapping of
+or driver code. It could also call cross platform libraries or OS abstractions that accomplish this task. We allow easy swapping of
 underlying libraries or drivers without affecting the higher-level code; while supporting a wide range of peripherals
 across different platforms.
 
@@ -58,9 +58,12 @@ API for the higher-level code.
 To manage the selection of the appropriate PAL implementation for a given platform, a configuration mechanism is used.
 This can be done through compile-time directives, these can be set using `menuconfig`.
 
-The reccomended implementation is through the use of [WiringX](https://github.com/wiringX/wiringX), a library that
-allows developers to control the GPIO of various platforms with generic and uniform functions. By using wiringX,
-the same code will run on all platforms supported by wiringX, natively.
+The reccomended implementation on the Linux Core is through the use of subsystems provided by the Linux Kernel.
+That way systems such as GPIO, I2C are the same across all Linux SBC's. There is minimal change to the PAL as kernel
+features are used. Any DT-overlays are bundled with PAL for that platform.
+
+While the PAL will for almost all use cases call underyling kernel subsystems, the code will still be portable for other OS'es
+or in the case of no OS.
 
 ## Hardware Abstraction Layer (HAL)
 
