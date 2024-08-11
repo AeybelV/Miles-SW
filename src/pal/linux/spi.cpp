@@ -1,30 +1,35 @@
-// #ifdef USE_SPIDEV
+#ifdef USE_SPIDEV
 
 #include "pal/spi.h"
 #include "common/logger.hpp"
 
+#include <cstdint>
 #include <cstdlib>
 #include <fcntl.h>
 #include <linux/spi/spi.h>
 #include <linux/spi/spidev.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#define SPI_DEVICE "/dev/spidev0.0"
-#define MODULE_NAME "[SPI]"
-
-SPIInterface::SPIInterface(const std::string &deviceName, uint8_t mode, uint8_t bits,
-                           uint32_t speed)
+SPIInterface::SPIInterface(const std::string &deviceName, uint8_t bus, uint8_t slave, uint8_t mode,
+                           uint8_t bits, uint32_t speed)
 {
     this->deviceName = deviceName;
+    this->bus = bus;
+    this->slave = slave;
     this->mode = mode;
     this->bits = bits;
     this->speed = speed;
+
+#if defined(DEBUG_ENABLED) || defined(DEBUG_SPI)
     logger.setLogLevel(LogLevel::DEBUG);
-    logger.setLogToFile("spi_spidev.log", true);
-    logger.setModuleName("SPI");
+#endif
+
+    logger.setLogToFile("spi_spidev" + std::to_string(bus) + "." + std::to_string(slave), true);
+    logger.setModuleName("SPI-" + deviceName);
 }
 
 mstatus_t SPIInterface::init()
@@ -32,8 +37,9 @@ mstatus_t SPIInterface::init()
     logger.info("Initializing SPI Interface");
 
     // Opens the device file
-    logger.debug("Opening spidev device file");
-    fd = open(SPI_DEVICE, O_RDWR);
+    std::string spi_device_path = "/dev/spidev" + std::to_string(bus) + "." + std::to_string(slave);
+    logger.debug("Opening " + spi_device_path + " device file");
+    fd = open(spi_device_path.c_str(), O_RDWR);
     if (fd < 0)
     {
         logger.error("Unable to open spidev device file");
@@ -96,4 +102,4 @@ SPIInterface::~SPIInterface()
     }
 }
 
-// #endif // USE_SPIDEV
+#endif // USE_SPIDEV

@@ -29,12 +29,19 @@ include_directories(/opt/riscv64-linux-headers/include)
 add_executable(Miles ${SOURCES})
 
 if(USE_SPIDEV)
-  target_compile_definitions(Miles PRIVATE USE_SPIDEV)
+  target_compile_definitions(Miles PUBLIC USE_SPIDEV)
+endif()
+
+# Debug mode
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_definitions(Miles PUBLIC DEBUG_ENABLED)
 endif()
 
 # Enable testing
 if(ENABLE_TESTING)
-  enable_testing()
+  MESSAGE(STATUS "Tests are enabled")
+  # enable_testing() # Adds tests to run on host after the build here
   add_subdirectory(tests)
 endif()
 
