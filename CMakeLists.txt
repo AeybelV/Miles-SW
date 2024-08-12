@@ -4,6 +4,13 @@ project(Miles)
 # ========== SPI ==========
 option(USE_SPIDEV "Use spidev for spi communication" ON)
 
+# ========== IMU ==========
+set(IMU_SPI_BUS 0)
+set(IMU_SPI_SLAVE 0)
+set(IMU_SPI_SPEED 1000000)
+
+option(IMU_ICM_20948 "Use the TDK ICM-20948 IMU" ON)
+
 # ========== TESTS ==========
 option(ENABLE_TESTING "Enable compilation of tests" ON)
 
@@ -32,8 +39,11 @@ if(USE_SPIDEV)
   target_compile_definitions(Miles PUBLIC USE_SPIDEV)
 endif()
 
-# Debug mode
+target_compile_definitions(Miles PUBLIC IMU_SPI_BUS=${IMU_SPI_BUS})
+target_compile_definitions(Miles PUBLIC IMU_SPI_SLAVE=${IMU_SPI_SLAVE})
+target_compile_definitions(Miles PUBLIC IMU_SPI_SPEED=${IMU_SPI_SPEED})
 
+# Debug mode
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(Miles PUBLIC DEBUG_ENABLED)
 endif()
