@@ -1,7 +1,6 @@
 #include "drivers/imu/icm-20948.hpp"
 #include "common/types.h"
 #include <cstdint>
-#include <iostream>
 #include <linux/spi/spi.h>
 // #ifdef IMU_ICM_20948
 
@@ -118,22 +117,22 @@ mstatus_t ICM20948::configureGyro(uint8_t range)
     {
     case ICM20948_GYRO_RANGE_250DPS:
     {
-        gyroScaleFactor = 131;
+        gyroScaleFactor = 131.0f;
         break;
     }
     case ICM20948_GYRO_RANGE_500DPS:
     {
-        gyroScaleFactor = 65.5;
+        gyroScaleFactor = 65.5f;
         break;
     }
     case ICM20948_GYRO_RANGE_1000DPS:
     {
-        gyroScaleFactor = 32.8;
+        gyroScaleFactor = 32.8f;
         break;
     }
     case ICM20948_GYRO_RANGE_2000DPS:
     {
-        gyroScaleFactor = 16.4;
+        gyroScaleFactor = 16.4f;
         break;
     }
     default:
@@ -201,6 +200,7 @@ mstatus_t ICM20948::setAccelSampleRate(uint8_t rate)
 mstatus_t ICM20948::readAccel(float &accelX, float &accelY, float &accelZ)
 {
     changeUserBank(ICM20948_REG_BANK_SEL_BANK_0);
+    // TODO: Might be more performant to have a multiple register read
     uint8_t accel_xout_h = readRegister(ICM20948_UB0_ACCEL_XOUT_H);
     uint8_t accel_xout_l = readRegister(ICM20948_UB0_ACCEL_XOUT_L);
     uint8_t accel_yout_h = readRegister(ICM20948_UB0_ACCEL_YOUT_H);
@@ -208,10 +208,12 @@ mstatus_t ICM20948::readAccel(float &accelX, float &accelY, float &accelZ)
     uint8_t accel_zout_h = readRegister(ICM20948_UB0_ACCEL_ZOUT_H);
     uint8_t accel_zout_l = readRegister(ICM20948_UB0_ACCEL_ZOUT_L);
 
+    // Packs upper and lower byte
     int16_t x = ((int16_t)accel_xout_h << 8) | accel_xout_l;
     int16_t y = ((int16_t)accel_yout_h << 8) | accel_yout_l;
     int16_t z = ((int16_t)accel_zout_h << 8) | accel_zout_l;
 
+    // Yields acceleration in m/s^2
     accelX = (x / accelScaleFactor) * 9.8f;
     accelY = (y / accelScaleFactor) * 9.8f;
     accelZ = (z / accelScaleFactor) * 9.8f;
@@ -219,6 +221,29 @@ mstatus_t ICM20948::readAccel(float &accelX, float &accelY, float &accelZ)
     return M_SUCC;
 }
 
+mstatus_t ICM20948::readGyro(float &gyroX, float &gyroY, float &gyroZ)
+{
+    changeUserBank(ICM20948_REG_BANK_SEL_BANK_0);
+    // TODO: Might be more performant to have a multiple register read
+    uint8_t gyro_xout_h = readRegister(ICM20948_UB0_ACCEL_XOUT_H);
+    uint8_t gyro_xout_l = readRegister(ICM20948_UB0_ACCEL_XOUT_L);
+    uint8_t gyro_yout_h = readRegister(ICM20948_UB0_ACCEL_YOUT_H);
+    uint8_t gyro_yout_l = readRegister(ICM20948_UB0_ACCEL_YOUT_L);
+    uint8_t gyro_zout_h = readRegister(ICM20948_UB0_ACCEL_ZOUT_H);
+    uint8_t gyro_zout_l = readRegister(ICM20948_UB0_ACCEL_ZOUT_L);
+
+    // Packs upper and lower byte
+    int16_t x = ((int16_t)gyro_xout_h << 8) | gyro_xout_l;
+    int16_t y = ((int16_t)gyro_yout_h << 8) | gyro_yout_l;
+    int16_t z = ((int16_t)gyro_zout_h << 8) | gyro_zout_l;
+
+    // Yields angular acceleration in rad/s^2
+    gyroX = (x / gyroScaleFactor) * (3.14159265359f / 180.0f);
+    gyroY = (y / gyroScaleFactor) * (3.14159265359f / 180.0f);
+    gyroZ = (z / gyroScaleFactor) * (3.14159265359f / 180.0f);
+
+    return M_SUCC;
+}
 mstatus_t ICM20948::initialize()
 {
     logger.info("Initializing TDK ICM-20948 IMU");
