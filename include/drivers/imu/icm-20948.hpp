@@ -84,7 +84,7 @@ class ICM20948
 
     mstatus_t initialize();
     mstatus_t readGyro(float &gyroX, float &gyroY, float &gyroZ);
-    mstatus_t readAccel(int16_t &accelX, int16_t &accelY, int16_t &accelZ);
+    mstatus_t readAccel(float &accelX, float &accelY, float &accelZ);
     void configure();
 
   private:

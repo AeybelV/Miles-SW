@@ -160,26 +160,26 @@ mstatus_t ICM20948::configureAccel(uint8_t range)
     {
     case ICM20948_ACCEL_RANGE_2G:
     {
-        accelScaleFactor = 16;
+        accelScaleFactor = 16384.0f;
         break;
     }
     case ICM20948_ACCEL_RANGE_4G:
     {
-        accelScaleFactor = 8;
+        accelScaleFactor = 8192.0f;
         break;
     }
     case ICM20948_ACCEL_RANGE_8G:
     {
-        accelScaleFactor = 4;
+        accelScaleFactor = 4096.0f;
         break;
     }
     case ICM20948_ACCEL_RANGE_16G:
     {
-        accelScaleFactor = 2;
+        accelScaleFactor = 2048.0f;
         break;
     }
     default:
-        accelScaleFactor = 131;
+        accelScaleFactor = 16384.0f;
     }
     return M_SUCC;
 }
@@ -198,7 +198,7 @@ mstatus_t ICM20948::setAccelSampleRate(uint8_t rate)
     return M_SUCC;
 }
 
-mstatus_t ICM20948::readAccel(int16_t &accelX, int16_t &accelY, int16_t &accelZ)
+mstatus_t ICM20948::readAccel(float &accelX, float &accelY, float &accelZ)
 {
     changeUserBank(ICM20948_REG_BANK_SEL_BANK_0);
     uint8_t accel_xout_h = readRegister(ICM20948_UB0_ACCEL_XOUT_H);
@@ -208,13 +208,13 @@ mstatus_t ICM20948::readAccel(int16_t &accelX, int16_t &accelY, int16_t &accelZ)
     uint8_t accel_zout_h = readRegister(ICM20948_UB0_ACCEL_ZOUT_H);
     uint8_t accel_zout_l = readRegister(ICM20948_UB0_ACCEL_ZOUT_L);
 
-    uint16_t x = ((int16_t)accel_xout_h << 8) | accel_xout_l;
-    uint16_t y = ((int16_t)accel_yout_h << 8) | accel_yout_l;
-    uint16_t z = ((int16_t)accel_zout_h << 8) | accel_zout_l;
+    int16_t x = ((int16_t)accel_xout_h << 8) | accel_xout_l;
+    int16_t y = ((int16_t)accel_yout_h << 8) | accel_yout_l;
+    int16_t z = ((int16_t)accel_zout_h << 8) | accel_zout_l;
 
-    accelX = x / accelScaleFactor;
-    accelY = y / accelScaleFactor;
-    accelZ = z / accelScaleFactor;
+    accelX = (x / accelScaleFactor) * 9.8f;
+    accelY = (y / accelScaleFactor) * 9.8f;
+    accelZ = (z / accelScaleFactor) * 9.8f;
 
     return M_SUCC;
 }
